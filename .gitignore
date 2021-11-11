@@ -55,6 +55,7 @@ dkms.conf
 .vscode
 
 #Project files
+Training/TRAINING
 
 #MACOS
 .DS_Store

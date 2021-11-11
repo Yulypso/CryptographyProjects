@@ -3,7 +3,7 @@ CC_FLAGS = -Wall
 SRCDIR   = src
 EXEC = TDO3
 
-all: compile run clean
+all: compile
 
 run: 
 	@./$(EXEC)

@@ -1,7 +1,7 @@
 CC = gcc
 CC_FLAGS = -Wall
 SRCDIR   = src
-EXEC = TDO4
+EXEC = TRAINING
 
 all: compile
 
