@@ -1,0 +1,56 @@
+a  b  c  d  e  f  g  h  i  j  k  l  m  n  o  p  q  r  s  t  u  v  w  x  y  z  
+g  p  o  i  x  t  a  w  d  s  y  q  v  u  c  b  l  z  j  f  n  m  h  e  k  r 
+
+La fréquence de x vaut 0.156066 => e remplacé par x
+x<=>e OUI
+l<=>q OUI
+f<=>t OUI
+s<=>j OUI
+u<=>n OUI
+r<=>z OUI
+g<=>a OUI
+d<=>i OUI
+m<=>v OUI
+b<=> p OUI
+y<=> k OUI
+h<=> w OUI
+
+f<=>n
+c<=>o ?
+
+
+bigramme le plus fréquent: 
+
+qx: 41 <=> le
+xu: 39 <=> es
+
+
+xj: 38 <=> en ?
+xf: 31 <=> er
+
+fx: 26  <=> de
+
+xz: 26  
+ux: 12
+
+
+d: a
+f: n
+g: n, i ?
+j: s, a, n, i ?
+u: s, a, n, i ?
+
+bx: 9
+dx: 20  
+fx: 26  xf: 31 //
+ix: 23  xi: 12
+jx: 24  xj: 38 //
+nx: 14  xn: 16 //
+ox: 17  xo: 10
+qx: 41  xq: 10 //
+ux: 26  xu: 39 //
+vx: 12  xv: 10
+        xt: 11 //
+        xx: 12
+zx: 25  xz: 26
+
