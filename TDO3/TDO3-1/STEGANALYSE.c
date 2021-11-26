@@ -72,6 +72,41 @@ Uint32 getpixel(SDL_Surface *surface, int y, int x)
 }
 
 
+Uint32 setpixel(Uint32 PIXEL, Uint8 r, Uint8 g, Uint8 b, int lsb)
+{
+    if(lsb)
+    {
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN) 
+        {
+            PIXEL = (PIXEL & ~(1 << 4)) | ((Uint32)r << 4);       // red
+            PIXEL = (PIXEL & ~(1 << 12)) | ((Uint32)g << 12);       // green
+            PIXEL = (PIXEL & ~(1 << 20)) | ((Uint32)b << 20);       // blue
+        }
+        else 
+        {
+            PIXEL = (PIXEL & ~(1 << 20)) | ((Uint32)r << 20);       // red
+            PIXEL = (PIXEL & ~(1 << 12)) | ((Uint32)g << 12);       // green
+            PIXEL = (PIXEL & ~(1 << 4)) | ((Uint32)b << 4);       // blue
+        }
+    }
+    else
+    {
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN) 
+        {
+            PIXEL = (PIXEL & ~(1 << 0)) | ((Uint32)r << 0);       // red
+            PIXEL = (PIXEL & ~(1 << 8)) | ((Uint32)g << 8);       // green
+            PIXEL = (PIXEL & ~(1 << 16)) | ((Uint32)b << 16);       // blue
+        }
+        else 
+        {
+            PIXEL = (PIXEL & ~(1 << 16)) | ((Uint32)r << 16);       // red
+            PIXEL = (PIXEL & ~(1 << 8)) | ((Uint32)g << 8);       // green
+            PIXEL = (PIXEL & ~(1 << 0)) | ((Uint32)b << 0);       // blue
+        }
+    }
+
+    return PIXEL;
+}
 
 /*Fonction qui recherche une image cachée dans une autre image*/
 void recherche_image_cachee(SDL_Surface * IMAGE_MERE, SDL_Surface * image_cachee)
@@ -91,29 +126,111 @@ void recherche_image_cachee(SDL_Surface * IMAGE_MERE, SDL_Surface * image_cachee
    Pour celà, vous aurez besoin d'un pointeur de type Uint8* pour balayer et indexer les contenus des pixels de l'image cachée. Les valeurs p[0], p[1] et p[2] seront mis à jour via les octets du PIXEL2 calculés depuis les deux pixels de l'image mère. Vous pouvez vous inspirer du code de la fonction "getpixel" pour cette partie.
 
    Vous pouvez rajouter d'autres variables si nécessaire pour le bon déroulement de la fonction comme par exemple les tailles de l'image mère, etc.*/ 
-  /*
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * A remplir
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   */
+  
+    /*Uint32 PIXEL1 = 0, PIXEL2 = 0;
+    Uint8 r = 0, g = 0, b = 0;
+
+    for (int i = 0; i < IMAGE_MERE->h; ++i)
+    {
+        for (int j = 0; j < IMAGE_MERE->w; ++j)
+        {
+            PIXEL1 = getpixel(IMAGE_MERE, i, j);
+            SDL_GetRGB(PIXEL1, IMAGE_MERE->format, &r, &g, &b);
+            
+            PIXEL2 = setpixel(PIXEL2, r << 4, g << 4, b << 4, j % 2);
+
+            if(i == 0 && j == 0)
+            {
+                printf("red %u\n", (Uint32)r & 15);
+                printf("%u\n", PIXEL1);
+                printf("%u\n", PIXEL2);
+            }
+
+            if(i == 0 && j == 1)
+            {
+                printf("%u\n", PIXEL1);
+                printf("%u\n", PIXEL2);
+            }
+        }
+    }*/
+    int x_f, x_m, y_m, larg_img_mere, hau_img_mere;
+  int bpp = image_cachee->format->BytesPerPixel; /*Nombre d'octets/pixel de la surface de l'image cachée*/
+  Uint32 PIXEL1, PIXEL2; /*PIXEL1 sera utilisé pour l'image mère et PIXEL2 pour l'image cachée*/
+  Uint8 * p;                /*pointeur pour balayer et indexer les contenus des pixels de l'image cachée*/
+  Uint8 R, G, B;            /*composants R=>rouge, G=>vert et B=> bleu pour le pixel PIXEL1 de l'image mère*/
+  larg_img_mere = IMAGE_MERE->w; /*Pour obtenir la largeur de l'image mère*/
+  hau_img_mere = IMAGE_MERE->h;  /*Pour obtenir la hauteur de l'image mère*/
+  //printf("%d %d\n", larg_img_mere, hau_img_mere);
+  y_m=0;
+ 
+  while (y_m < hau_img_mere)
+  {
+    x_m=0; x_f=0;
+    while (x_m < larg_img_mere)
+    {
+      
+      PIXEL1 = getpixel(IMAGE_MERE, y_m, x_m); /*récupération du pixel de l'image mère*/
+      SDL_GetRGB(PIXEL1, IMAGE_MERE->format, &R, &G, &B); /*Récupération des composants RGB du pixel de l'image mère*/
+      
+      PIXEL2=0;
+      
+      PIXEL2 = PIXEL2 ^ ((Uint32)(R&15) << 20);
+      
+      PIXEL2 = PIXEL2 ^ ((Uint32)(G&15) << 12);
+      
+      PIXEL2 = PIXEL2 ^ ((Uint32)(B&15) << 4);
+      /*Fin de la récupération des bits de poids fort de l'image fille*/
+      
+      x_m++; /*pour aller au pixel suivant de l'image mère*/
+      PIXEL1 = getpixel(IMAGE_MERE, y_m, x_m); /*récupération du pixel de l'image mère*/
+      SDL_GetRGB(PIXEL1, IMAGE_MERE->format, &R, &G, &B); /*Récupération des composants RGB du pixel de l'image mère*/
+     
+
+      /*Début de la récuperation des bits de poids faible initialement cachés de l'image fille pour chaque composant couleur*/
+     
+      PIXEL2 = PIXEL2 ^ ((Uint32)(R&15) << 16);
+      
+      PIXEL2 = PIXEL2 ^ ((Uint32)(G&15) << 8);
+      
+      PIXEL2 = PIXEL2 ^ ((Uint32)(B&15));
+      /*Fin de la récupération des bits de poids faible de l'image fille*/
+     /*A ce stade la valeur du pixel "PIXEL2" est prête à être injectée dans l'image fille. Il faut donc l'affecter à la surface de l'image cachée*/
+      /*
+        image_cachee->pixels contient l'adresse du premier composant couleur (ici BLEU) du premier pixel de l'image cachée. 
+        Avec ce pointeur on va pouvoir balayer l'image comme une suite d'octets RGB correspondant à chaque pixel.
+      */
+     
+     p = (Uint8 *)image_cachee->pixels + y_m * image_cachee->pitch + x_f * bpp; /*positionnement du pointeur sur le pixel de l'image fille, afin de pouvoir changer sa valeur*/
+      switch (bpp) /*Pour stocker les octets dans le bon format*/
+      {
+	case 1:
+	  *p = PIXEL2;
+	  break;
+	  
+	case 2:
+	  *(Uint16 *)p = PIXEL2;
+	  break;
+	  
+	case 3:
+	  if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+	  {
+	    p[0] = (PIXEL2 >> 16) & 255; p[1] = (PIXEL2 >> 8) & 255; p[2] = PIXEL2 & 255;
+	  }
+	  else
+	  {
+	    p[0] = PIXEL2 & 255; p[1] = (PIXEL2 >> 8) & 255; p[2] = (PIXEL2 >> 16) & 255;
+	  }
+          break;
+	  
+	case 4:
+	  *(Uint32 *)p = PIXEL2;
+	  break;
+      }
+     x_m++; x_f++;
+    }
+    
+    y_m++;
+  }
 }
 
 
@@ -121,33 +238,28 @@ void recherche_image_cachee(SDL_Surface * IMAGE_MERE, SDL_Surface * image_cachee
 /*Fonction qui recherche le texte caché dans l'image fille*/
 void recherche_texte_cache_dans_image(SDL_Surface * image, char * TEXTE)
 {
-  /*
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * A remplir
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   */
+    int x_m, y_m;
+    Uint32 PIXEL1;
+    Uint8 R, G, B;
+    char caractere;
+
+    int cpt = 0;
+
+    y_m = 0;
+    while (y_m < image->h)
+    {
+        x_m = 0;
+        while (x_m < image->w)
+        {
+            PIXEL1 = getpixel(image, y_m, x_m); /*récupération du pixel de l'image mère*/
+            SDL_GetRGB(PIXEL1, image->format, &R, &G, &B); /*Récupération des composants RGB du pixel de l'image mère*/
+
+            caractere = 0;
+            TEXTE[cpt++] = caractere | (R & 3) << 5 | (G & 3) << 3 | (B & 7);
+            ++x_m;
+        }
+        ++y_m;
+    }
 }
 
 
@@ -193,8 +305,10 @@ int main (int argc, char * argv[])
      switch(event.type) 
      {
       case SDL_MOUSEBUTTONUP: // en cas de Clic de la souris
-         if(event.button.button==SDL_BUTTON_LEFT) 
-	 {PAUSE=0;/*Pour ensuite sortir de la boucle et conituer le programme*/}
+        if(event.button.button==SDL_BUTTON_LEFT) 
+        {
+            PAUSE=0;/*Pour ensuite sortir de la boucle et conituer le programme*/
+        }
      } 
   }
   
