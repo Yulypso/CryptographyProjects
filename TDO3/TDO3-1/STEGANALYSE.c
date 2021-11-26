@@ -65,17 +65,6 @@ Uint32 getpixel(SDL_Surface *surface, int y, int x)
     }
 }
 
-Uint32 setpixelLsb(Uint32 PIXEL, Uint8 r, Uint8 g, Uint8 b)
-{
-    PIXEL = PIXEL ^ ((Uint32)(r & 15) << 16);
-
-    PIXEL = PIXEL ^ ((Uint32)(g & 15) << 8);
-
-    PIXEL = PIXEL ^ ((Uint32)(b & 15));
-
-    return PIXEL;
-}
-
 Uint32 setpixelMsb(Uint32 PIXEL, Uint8 r, Uint8 g, Uint8 b)
 {
 
@@ -84,6 +73,17 @@ Uint32 setpixelMsb(Uint32 PIXEL, Uint8 r, Uint8 g, Uint8 b)
     PIXEL = PIXEL ^ ((Uint32)(g & 15) << 12);
 
     PIXEL = PIXEL ^ ((Uint32)(b & 15) << 4);
+
+    return PIXEL;
+}
+
+Uint32 setpixelLsb(Uint32 PIXEL, Uint8 r, Uint8 g, Uint8 b)
+{
+    PIXEL = PIXEL ^ ((Uint32)(r & 15) << 16);
+
+    PIXEL = PIXEL ^ ((Uint32)(g & 15) << 8);
+
+    PIXEL = PIXEL ^ ((Uint32)(b & 15));
 
     return PIXEL;
 }
